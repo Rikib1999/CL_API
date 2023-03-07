@@ -51,7 +51,6 @@ namespace CommandLineParser
             foreach (PropertyInfo property in properties)
             {
                 property.GetCustomAttributes<Argument>(false).FirstOrDefault(defaultValue: null);
-
             }
 
             return commandInstance;

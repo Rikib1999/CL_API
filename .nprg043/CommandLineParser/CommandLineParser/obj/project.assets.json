@@ -8,32 +8,27 @@
     "net7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\riki1\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\asus\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\riki1\\Desktop\\Doporučené postupy v programovaní\\t06-api-design\\.nprg043\\CommandLineParser\\CommandLineParser\\CommandLineParser.csproj",
+      "projectUniqueName": "C:\\Users\\asus\\Desktop\\MFF UK\\Doporucene postupy v programovani\\t06-api-design\\.nprg043\\CommandLineParser\\CommandLineParser\\CommandLineParser.csproj",
       "projectName": "CommandLineParser",
-      "projectPath": "C:\\Users\\riki1\\Desktop\\Doporučené postupy v programovaní\\t06-api-design\\.nprg043\\CommandLineParser\\CommandLineParser\\CommandLineParser.csproj",
-      "packagesPath": "C:\\Users\\riki1\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\riki1\\Desktop\\Doporučené postupy v programovaní\\t06-api-design\\.nprg043\\CommandLineParser\\CommandLineParser\\obj\\",
+      "projectPath": "C:\\Users\\asus\\Desktop\\MFF UK\\Doporucene postupy v programovani\\t06-api-design\\.nprg043\\CommandLineParser\\CommandLineParser\\CommandLineParser.csproj",
+      "packagesPath": "C:\\Users\\asus\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\asus\\Desktop\\MFF UK\\Doporucene postupy v programovani\\t06-api-design\\.nprg043\\CommandLineParser\\CommandLineParser\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\riki1\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {},
+        "https://pkgs.dev.azure.com/rigantitfs/_packaging/RIGANTI/nuget/v3/index.json": {}
       },
       "frameworks": {
         "net7.0": {
@@ -66,7 +61,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.103\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   }
