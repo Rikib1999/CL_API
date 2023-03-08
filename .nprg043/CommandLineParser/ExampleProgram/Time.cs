@@ -37,7 +37,7 @@ namespace ExampleProgram
             ,HelpText = "Give very verbose output about all the program knows about."
             ,MaxParameterCount = 0
         )]
-        public Option Verbose { get; set; }
+        public string Verbose { get; set; }
 
 
         [Argument(order: 0, IsRequired = true)]
