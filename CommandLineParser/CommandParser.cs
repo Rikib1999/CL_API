@@ -29,6 +29,20 @@ namespace CommandLineParser
             return commandInstance;
         }
 
+        /// <summary>
+        /// Takes an empty command into which parameters will be filled in.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="commandInstance">Instance of an empty command into which parameters will be filled in.</param>
+        /// <returns>Instance of the filled in command.</returns>
+        /// <exception cref="NullReferenceException"></exception>
+        /// <exception cref="MissingInterfaceException"></exception>
+        /// <exception cref="CommandParserException"></exception>
+        public static T Parse(string[] args, T commandInstance)
+        {
+            return Parse(string.Join(' ', args), commandInstance);
+        }
+
         private static T ParseOptions(string command, T commandInstance)
         {
             //partial implementation...
