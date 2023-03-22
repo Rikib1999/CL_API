@@ -18,6 +18,15 @@
         /// <returns></returns>
         public static string GetHelpText(this ICommandDefinition commandDefinition, string name)
         {
+            return $"help text for command {name}";
+        }
+
+        /// <summary>
+        /// Returns help text for the whole command.
+        /// </summary>
+        /// <returns></returns>
+        public static string GetHelpText(this ICommandDefinition commandDefinition)
+        {
             return "help text";
         }
     }

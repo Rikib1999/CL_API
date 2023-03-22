@@ -17,6 +17,10 @@ namespace ExampleProgram
             {
                 //...
             }
+
+            var randomCommandHelpText = timeCommand.GetHelpText("-r");
+
+            var wholeHelpText = timeCommand.GetHelpText();
         }
     }
 }

@@ -65,7 +65,7 @@ Similiarly
 
 To create a plain argument we use Argument attribute on a property specified in the command class. However it is a plain argument so to distinguish between plain arguments we need to specify order the Argument via constructor. We can also specify if the argument is required or optional. We can set the HelpText in the same way as the helptext of an option. If the property is numerical we can set minimal and maximal desired value of this argument via UpperBound and LowerBound properties.
 
-example: 
+### example
 
 ``` C#
 [Argument(order: 0, IsRequired = true)]
@@ -76,7 +76,7 @@ Here we have specified that this is the first plain argument named Command and i
 
 To use multiple, possibly endless number of arguments we can set this argument to be of type List<> or an array
 
-example : 
+### example
 
 ``` C#
 [Argument(order: 1, IsRequired = true)]
@@ -91,6 +91,31 @@ SimpleCommand simpleCommand = new SimpleCommand();
             timeCommand = CommandParser<SimpleCommand>.Parse(commandLineInput, simpleCommand);
 ```
 
+
+
+### example
+
+``` C#
+[Boundaries<int>(lowerBound: 1, upperBound: 10)]
+        [Option(names: new string[] { "-n", "--number" })]
+        public int Number { get; set; }
+```
+In this example we have used attribute named Boundaries, which is generic by IComparible interface. We specify lower and upperBound properties of the attribute, based on which the property is checked for validity. This way we can test whether the command has right parameters. If it does not, the user is thrown an exception. 
+It is up to user to define the property and the Boundaries with the same type. 
+
+### example
+
+``` C#
+[Option(names: new string[] { "-r", "--random" }
+        , Dependencies = new string[] { "--verbose" }
+        , HelpText = "This is a random option"
+        , Exclusivities = new string[] { "-n" })]
+        public object Random { get; set; }
+```
+In this example we have added Dependencies and Exclustivites. As the names suggests here we specify other properties which in the case of Dependencies, the property Random depends on. This is again checked for when parsing the command. 
+
+Exclustivities similliarly checks wheter Random Option is not used with any of the Options in Exclusivities array. Therefore if the parsed command contains --number and --random the user is thrown an exception. 
+
 ## Key concepts
 
 We use attributes to specify if a property of our command class is an option or an argument.
@@ -99,6 +124,8 @@ Then we use static generic class CommandParser to parse the command line string.
 
 The command line is checked for undesired behaviour such as NullValue, the command line string not containing a command of our specified type via reflection.
 
-We use reflection to parse the command line string input into arguments and options and the user of our api is then returned object with properties that corespond to the defined command class. 
+We use reflection to parse the command line string input into arguments and options and the user of our api is then returned object with properties that corespond to the defined command class. Options and arguments come with a variety of properties for specifying various conditions, which are checked for when we call the Parse method. Based on this the user does not need to check for any condition, which he has specified in the attributes. 
+
+It is done for the user. If the command does not meet the defined criteria, we throw an exception, which the user can catch and work with.
 
 User therefore accesses the values via properties of the object.
