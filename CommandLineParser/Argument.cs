@@ -12,20 +12,21 @@
             this.order = order;
         }
 
-        //positional arguments
+        #region positional arguments
+
         readonly int order;
         public int Order { get { return order; } }
 
-        //named arguments
+        #endregion
+
+        #region named arguments
+
+        /// <summary>
+        /// Sets the optionality of this argument. Arguments will be passed by their order, so ommited arguments should come at the end of the command.
+        /// </summary>
         public bool IsRequired { get; set; } = false;
         public string HelpText { get; set; } = "";
-        /// <summary>
-        /// Minimal value of numeric argument, default is MinValue.
-        /// </summary>
-        public int LowerBound { get; set; } = int.MinValue;
-        /// <summary>
-        /// Maximal value of numeric argument, default is MaxValue.
-        /// </summary>
-        public int UpperBound { get; set; } = int.MaxValue;
+
+        #endregion
     }
 }

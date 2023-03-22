@@ -15,24 +15,49 @@
             this.names = names;
         }
 
-        //positional arguments
+        #region positional arguments
+
         readonly string[] names;
         /// <summary>
         /// Name of the option with all its synonyms.
         /// </summary>
         public string[] Names { get { return names; } }
 
-        //named arguments
+        #endregion
+
+        #region named arguments
+
         public bool IsRequired { get; set; } = false;
+
         public string HelpText { get; set; } = "";
+
         public object? DefaultValue { get; set; }
+
         /// <summary>
         /// Minimal numer of parameters, default is 0.
         /// </summary>
         public int MinParameterCount { get; set; } = 0;
+
         /// <summary>
         /// Maximal numer of parameters, default is MaxValue.
         /// </summary>
         public int MaxParameterCount { get; set; } = int.MaxValue;
+
+        /// <summary>
+        /// Names of options this option is dependent on.
+        /// </summary>
+        public string[]? Dependencies { get; set; } = null;
+
+        /// <summary>
+        /// Names of options this option is exclusive with.
+        /// </summary>
+        public string[]? Exclusivities { get; set; } = null;
+
+        /// <summary>
+        /// Delimeter of option arguments, default is single space.
+        /// </summary>
+        public string Delimeter { get; set; } = " ";
+
+        #endregion
     }
 }

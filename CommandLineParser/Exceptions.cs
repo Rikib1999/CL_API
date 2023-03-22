@@ -5,19 +5,11 @@
     /// </summary>
     public class MissingInterfaceException : Exception
     {
-        public MissingInterfaceException()
-        {
-        }
+        public MissingInterfaceException() { }
 
-        public MissingInterfaceException(string message)
-            : base(message)
-        {
-        }
+        public MissingInterfaceException(string message) : base(message) { }
 
-        public MissingInterfaceException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
+        public MissingInterfaceException(string message, Exception inner) : base(message, inner) { }
     }
 
     /// <summary>
@@ -25,18 +17,10 @@
     /// </summary>
     public class CommandParserException : Exception
     {
-        public CommandParserException()
-        {
-        }
+        public CommandParserException() { }
 
-        public CommandParserException(string message)
-            : base(message)
-        {
-        }
+        public CommandParserException(string message) : base(message) { }
 
-        public CommandParserException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
+        public CommandParserException(string message, Exception inner) : base(message, inner) { }
     }
 }
