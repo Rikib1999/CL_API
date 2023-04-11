@@ -1,0 +1,10 @@
+stages:
+  - test
+
+test:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  script:
+    - dotnet restore CommandLineParser.Tests/CommandLineParser.Tests.csproj
+    - dotnet build CommandLineParser.Tests/CommandLineParser.Tests.csproj
+    - dotnet test CommandLineParser.Tests/CommandLineParser.Tests.csproj
