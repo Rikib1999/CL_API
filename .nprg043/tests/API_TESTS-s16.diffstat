@@ -1,0 +1,12 @@
+ .gitlab-ci.yml                            |   21 ++++
+ CommandLineParser.sln                     |   14 ++
+ ParserTests/CustomDelimiterTests.cs       |   57 ++++++++++
+ ParserTests/DefaultValueTests.cs          |   54 ++++++++++
+ ParserTests/DependencyExclusivityTests.cs |  104 +++++++++++++++++++
+ ParserTests/ParameterCountTests.cs        |   71 +++++++++++++
+ ParserTests/ParserTests.csproj            |   23 ++++
+ ParserTests/RangeTests.cs                 |   61 +++++++++++
+ ParserTests/RequiredTests.cs              |   35 ++++++
+ ParserTests/TypeParsingTests.cs           |  157 ++++++++++++++++++++++++++++++
+ ParserTests/Usings.cs                     |    1 
+ 11 files changed, 598 insertions(+)

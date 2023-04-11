@@ -1,0 +1,21 @@
+image: mcr.microsoft.com/dotnet/sdk:7.0
+
+variables:
+  LIBRARY_NAME: 'CommandLineParser'
+  TEST_PROJECT_NAME: 'ParserTests'
+
+stages:
+  - build
+  - test
+
+build_job:
+  stage: build
+  script:
+    - 'cd $LIBRARY_NAME'
+    - "dotnet build"
+
+test_job:
+  stage: test
+  script:
+    - 'cd $TEST_PROJECT_NAME'
+    - 'dotnet test'
