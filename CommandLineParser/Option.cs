@@ -31,8 +31,6 @@
 
         public string HelpText { get; set; } = "";
 
-        public object? DefaultValue { get; set; }
-
         /// <summary>
         /// Minimal numer of parameters, default is 0.
         /// </summary>
