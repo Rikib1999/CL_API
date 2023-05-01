@@ -23,4 +23,24 @@
 
         public CommandParserException(string message, Exception inner) : base(message, inner) { }
     }
+
+    public class MissingRequiredOptionException : Exception
+    { 
+        public MissingRequiredOptionException(string message) : base(message) { }
+    }
+
+    public class IncorrectExtremesException : Exception
+    { 
+        public IncorrectExtremesException(string message) : base(message) { }
+    }
+
+    public class InvalidPropertyTypeException : Exception 
+    {
+        public InvalidPropertyTypeException(string message) : base(message) { }
+    }
+
+    public class InvalidValueException : Exception 
+    {
+        public InvalidValueException(string message) : base(message) { }
+    }
 }
