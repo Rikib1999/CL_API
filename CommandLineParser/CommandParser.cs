@@ -1,7 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
+using System.Runtime.Intrinsics.Arm;
+using System.Text;
 
 namespace CommandLineParser
 {
@@ -28,22 +28,38 @@ namespace CommandLineParser
             typeof(decimal),
             typeof(DateTime),
             typeof(Enum),
-            typeof(IEnumerable<bool>),
-            typeof(IEnumerable<byte>),
-            typeof(IEnumerable<sbyte>),
-            typeof(IEnumerable<char>),
-            typeof(IEnumerable<string>),
-            typeof(IEnumerable<int>),
-            typeof(IEnumerable<uint>),
-            typeof(IEnumerable<short>),
-            typeof(IEnumerable<ushort>),
-            typeof(IEnumerable<long>),
-            typeof(IEnumerable<ulong>),
-            typeof(IEnumerable<float>),
-            typeof(IEnumerable<double>),
-            typeof(IEnumerable<decimal>),
-            typeof(IEnumerable<DateTime>),
-            typeof(IEnumerable<Enum>)
+            typeof(bool[]),
+            typeof(byte[]),
+            typeof(sbyte[]),
+            typeof(char[]),
+            typeof(string[]),
+            typeof(int[]),
+            typeof(uint[]),
+            typeof(short[]),
+            typeof(ushort[]),
+            typeof(long[]),
+            typeof(ulong[]),
+            typeof(float[]),
+            typeof(double[]),
+            typeof(decimal[]),
+            typeof(DateTime[]),
+            typeof(Enum[]),
+            typeof(List<bool>),
+            typeof(List<byte>),
+            typeof(List<sbyte>),
+            typeof(List<char>),
+            typeof(List<string>),
+            typeof(List<int>),
+            typeof(List<uint>),
+            typeof(List<short>),
+            typeof(List<ushort>),
+            typeof(List<long>),
+            typeof(List<ulong>),
+            typeof(List<float>),
+            typeof(List<double>),
+            typeof(List<decimal>),
+            typeof(List<DateTime>),
+            typeof(List<Enum>)
         };
 
         /// <summary>
@@ -56,14 +72,18 @@ namespace CommandLineParser
         /// <exception cref="MissingInterfaceException"></exception>
         /// <exception cref="CommandParserException"></exception>
         /// /// <exception cref="ArgumentException"></exception>
-        public static T Parse(string[] args, T commandInstance)
+        public static T Parse(string command, T commandInstance)
         {
             if (commandInstance == null) throw new NullReferenceException(nameof(commandInstance));
             if (!typeof(T).GetInterfaces().Contains(typeof(ICommandDefinition))) throw new MissingInterfaceException("Class " + typeof(T).Name + " does not implement ICommandDefinition interface.");
-            if (args.Length < 1 || args is null) throw new ArgumentException("Command can not be null or empty.");
+            if (string.IsNullOrEmpty(command)) throw new ArgumentException("Command can not be null or empty.");
 
-            ParseOptions(args[1..], commandInstance);
-            ParseArguments(args, commandInstance);
+            CommandReferenceBag commandReferenceBag = CommandReferencer.AddCommandReference(commandInstance);
+
+            ParseOptions(command, commandInstance, commandReferenceBag);
+            ParseArguments(command, commandInstance, commandReferenceBag);
+
+            CommandReferencer.CleanUnusedCommandReferences();
 
             return commandInstance;
         }
@@ -77,257 +97,226 @@ namespace CommandLineParser
         /// <exception cref="NullReferenceException"></exception>
         /// <exception cref="MissingInterfaceException"></exception>
         /// <exception cref="CommandParserException"></exception>
-        public static T Parse(string command, T commandInstance)
+        public static T Parse(string[] args, T commandInstance)
         {
-            return Parse(command.Split(), commandInstance);
+            return Parse(string.Join(' ', args), commandInstance);
         }
 
-        private static bool CheckIsEnummerable(PropertyInfo property, Type propType, Option option)
+        private static T ParseOptions(string command, T commandInstance, CommandReferenceBag commandReferenceBag)
         {
-            bool isEnumerable = property is IEnumerable && propType.IsGenericType;
+            command = LeaveOneSpace(command);
 
-            if (!isEnumerable && option.MaxParameterCount > 1)
-            {
-                throw new CommandParserException("Option " + option.Names[0] + " can not be parsed. Option supports multiple arguments but it is not a collection.");
-            }
-            return true;
-        }
-
-        private static void CheckNameValidity(Option option)
-        {
-            foreach (string name in option.Names)
-            {
-                if (string.IsNullOrEmpty(name) || name.Length <= 1 || !name.StartsWith('-')) throw new CommandParserException(name + " is not a valid name for an option.");
-            }
-        }
-
-        private static void CheckIsTypeSupported(Option option, Type propType)
-        {
-            if (option.MaxParameterCount > 0)
-            {
-                bool isSupported = false;
-                foreach (Type t in supportedTypes)
-                {
-                    if (propType == t)
-                    {
-                        isSupported = true;
-                        break;
-                    }
-                }
-
-                if (!isSupported)
-                {
-                    throw new CommandParserException("Option " + option.Names[0] + " can not be parsed. Type of option [" + propType.Name + "] is not supported.");
-                }
-            }
-        }
-
-        private static void CheckIsRequired(Option option, int indexOfOption)
-        {
-            if (indexOfOption == -1 && option.IsRequired)
-            {
-                throw new MissingRequiredOptionException("Missing required option " + option.Names[0]);
-            }
-        }
-
-        private static void CheckExtremes(Option option, bool isEnummerable)
-        {
-            if (option.MinParameterCount < 0 || option.MaxParameterCount < 0)
-            {
-                throw new IncorrectExtremesException("Min and MaxParameterCount cannot be negative");
-            }
-
-            if (!isEnummerable && option.MinParameterCount > 1)
-            {
-                throw new IncorrectExtremesException("Non enummerable type cannot have MinParameterCount greater than 1");
-            }
-        }
-
-        private static int FindIndexOfOption(string[] command, Option option)
-        {
-            foreach (var name in option.Names)
-            {
-                int indexOfOption = Array.IndexOf(command, name);
-                if (indexOfOption != -1)
-                {
-                    return indexOfOption;
-                }
-            }
-            return -1;
-        }
-
-        private static bool IsDifferentOption(string commandToken, Option option, IEnumerable<string> namesOfAllProperties)
-        {
-            if (namesOfAllProperties.Any(x => !option.Names.Contains(x) && commandToken == x))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private static MethodInfo GetParsingMethod(Type propType) =>
-            propType.GetRuntimeMethod("TryParse", new Type[] { propType.MakeByRefType() });
-
-        private static ConstructorInfo GetParsingConstructor(Type propType) => 
-            propType
-            .GetConstructors()
-            .FirstOrDefault(x =>
-                x.GetParameters().Length == 1
-                && x.GetParameters()[0].ParameterType == typeof(string));
-
-        private static object? AssignEnummerableParser(MethodInfo parseMethod, Option option, Type propType, string[] command, int indexOfOptionInCommand, ref int commandIndex, IEnumerable<string> propertyNames, Type internalType)
-        {
-            var enummerable = Activator.CreateInstance(propType);
-
-            var addMethod = propType.GetMethod("Add");
-
-            while (!IsDifferentOption(command[commandIndex], option, propertyNames))
-            {
-                if (commandIndex >= command.Length)
-                {
-                    break;
-                }
-                if (commandIndex >= option.MaxParameterCount + indexOfOptionInCommand + 1)
-                {
-                    break;
-                }
-                var valueOfProperty = Activator.CreateInstance(internalType);
-                try
-                {
-                    parseMethod.Invoke(null, new object[] { valueOfProperty });
-                }
-                catch
-                {
-                    throw new InvalidValueException("Parsed value was incorrect");
-                }
-                addMethod.Invoke(null, new object[] { valueOfProperty });
-            }
-
-            return enummerable;
-        }
-
-        private static object? AssignEnnumerableWithConstructor(ConstructorInfo constructor, Option option, Type propType, string[] command, int indexOfOptionInCommand, ref int commandIndex, IEnumerable<string> propertyNames, Type internalType)
-        {
-            var enummerable = Activator.CreateInstance(propType);
-
-            var addMethod = propType.GetMethod("Add");
-
-            while (!IsDifferentOption(command[commandIndex], option, propertyNames))
-            {
-                if (commandIndex >= command.Length)
-                {
-                    break;
-                }
-                if (commandIndex >= option.MaxParameterCount + indexOfOptionInCommand + 1)
-                {
-                    break;
-                }
-                var valueOfProperty = Activator.CreateInstance(internalType);
-                if (!(bool)constructor.Invoke(new object[] { valueOfProperty }))
-                {
-                    throw new InvalidValueException("Parsed value was incorrect");
-                }
-                addMethod.Invoke(null, new object[] { valueOfProperty });
-            }
-
-            return enummerable;
-        }
-
-        private static object? AssignValue(bool isEnummerable, Option option, Type propType, string[] command, int indexOfOptionInCommand, ref int commandIndex, IEnumerable<string> propertyNames, Type internalType, PropertyInfo property)
-        {
-            MethodInfo parsingMethod = GetParsingMethod(internalType);
-
-            ConstructorInfo constructorMethod = null;
-
-            if (parsingMethod == null)
-            { 
-                constructorMethod = GetParsingConstructor(internalType);
-
-                if (constructorMethod == null)
-                { 
-                    throw new InvalidPropertyTypeException($"{option.Names.FirstOrDefault()} can not be parsed.");
-                }
-            }
-
-            Type boundariesType = typeof(Boundaries<>).MakeGenericType(internalType);
-
-            var boundaries = Activator.CreateInstance(boundariesType);
-
-            boundaries = property
-                .GetCustomAttributes()
-                .FirstOrDefault(x => x.GetType() == boundariesType.GetType());
-
-            var valueOfProperty = Activator.CreateInstance(internalType);
-
-            commandIndex++;
-
-            if (parsingMethod != null)
-            {
-                
-                parsingMethod.Invoke(null, new object[] { command[commandIndex], valueOfProperty });
-            }
-            else
-            {
-                valueOfProperty = constructorMethod?.Invoke(new object[] { command[commandIndex] });
-            }
-
-            if (isEnummerable)
-            {
-                if (parsingMethod != null)
-                {
-                    valueOfProperty = AssignEnnumerableWithConstructor(constructorMethod, option, propType, command, indexOfOptionInCommand, ref commandIndex, propertyNames, internalType);
-                }
-                else
-                {
-                    valueOfProperty = AssignEnummerableParser(parsingMethod, option, propType, command, indexOfOptionInCommand, ref commandIndex, propertyNames, internalType);
-                }
-            }
-
-            return valueOfProperty;
-        }
-
-        private static T ParseOptions(string [] command, T commandInstance)
-        {
             PropertyInfo[] properties = typeof(T).GetProperties();
 
-            var propertyNames = properties
-                .Select(x => x.GetCustomAttributes<Option>(false))
-                .FirstOrDefault(defaultValue: null)
-                .SelectMany(x => x.Names);
+            List<string> allOptionNames = new();
 
             foreach (PropertyInfo property in properties)
             {
                 Option option = property.GetCustomAttributes<Option>(false).FirstOrDefault(defaultValue: null);
-
                 if (option == null) continue;
 
+                //type checking //TODO: dat do metody
                 Type propType = property.PropertyType;
 
-                bool isEnummerable = CheckIsEnummerable(property, propType, option);
+                bool isArray = propType.IsArray;
+                bool isList = property is IList && propType.IsGenericType;
 
-                Type internalType = isEnummerable ? propType.GenericTypeArguments[0] : propType;
+                if (!(isArray || isList) && option.MaxParameterCount > 1) throw new CommandParserException("Option " + option.Names[0] + " can not be parsed. Option supports multiple arguments but it is not a collection.");
 
-                CheckNameValidity(option);
+                Type coreType = propType;
 
-                var indexOfOptionInCommand = FindIndexOfOption(command, option);
+                if (option.MaxParameterCount > 0)
+                {
+                    bool isSupported = false;
+                    foreach (Type t in supportedTypes)
+                    {
+                        if (propType == t)
+                        {
+                            isSupported = true;
+                            break;
+                        }
+                    }
 
-                //If the property is missing in the command than it stays null
+                    //class with string contructor
+                    if (propType.GetConstructor(new Type[] { typeof(string) }) != null) isSupported = true;
 
-                CheckIsRequired(option, indexOfOptionInCommand);
+                    Type[] typeArgs = propType.GetGenericArguments();
+                    if (isList && typeArgs != null && typeArgs.Length == 1 && typeArgs[0].GetConstructor(new Type[] { typeof(string) }) != null)
+                    {
+                        coreType = typeArgs[0];
+                        isSupported = true;
+                    }
 
-                CheckExtremes(option, isEnummerable);
+                    Type typeArg = propType.GetElementType();
+                    if (isArray && typeArg != null && typeArg.GetConstructor(new Type[] { typeof(string) }) != null)
+                    {
+                        coreType = typeArg;
+                        isSupported = true;
+                    }
 
-                int commandIndex = indexOfOptionInCommand;
+                    if (!isSupported) throw new CommandParserException("Option " + option.Names[0] + " can not be parsed. Type of option [" + propType.Name + "] is not supported.");
+                }
 
-                var valueOfProperty = AssignValue(isEnummerable, option, propType, command, indexOfOptionInCommand, ref commandIndex, propertyNames, internalType, property);
-                
-                //delete option arguments, so parsing plain arguments will be easier, just skipping - or --
+                string helpTextNames = string.Join(", ", option.Names);
+
+                //option name validity //TODO: dat do metody
+                foreach (string name in option.Names)
+                {
+                    if (string.IsNullOrEmpty(name) || name.Length <= 1 || !name.StartsWith('-')) throw new CommandParserException(name + " is not a valid name for an option.");
+
+                    if (allOptionNames.Contains(name)) throw new CommandParserException("Option name [" + name + "] occurs multiple times.");
+                    allOptionNames.Add(name);
+
+                    //helptext
+                    commandReferenceBag.HelpTexts[name] = helpTextNames + " : " + option.HelpText;
+                }
+
+                commandReferenceBag.AllHelpText += helpTextNames + " : " + option.HelpText + "\n";
+
+                //TODO: dat do metody
+                //najskor ju najdem
+                int startIndex = -1;
+                string usedName = "";
+
+                foreach (string name in option.Names)
+                {
+                    startIndex = command.IndexOf(name);
+                    if (startIndex >= 0)
+                    {
+                        usedName = name;
+                        break;
+                    }
+                }
+
+                //ak som nenasiel a je optional tak continue, inak throw exception
+                if (option.IsRequired && startIndex < 0) throw new CommandParserException("Required option " + option.Names[0] + " is missing.");
+
+                //option is present
+                if (startIndex >= 0)
+                {
+                    foreach (string name in option.Names)
+                    {
+                        commandReferenceBag.ArgsPresence[name] = true;
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+
+                //najdem vsetky parametre
+                List<string> parameters = new();
+                int currentPosition = startIndex + usedName.Length + 1;
+
+                while (parameters.Count < option.MaxParameterCount && currentPosition < command.Length)
+                {
+                    if (command[currentPosition] == '-') break; //narazili sme na dalsiu option alebo plain arguments
+
+                    StringBuilder sb = new();
+
+                    while (currentPosition < command.Length && (command[currentPosition] != ' ' || command[currentPosition] != option.Delimeter))
+                    {
+                        sb.Append(command[currentPosition]);
+                        currentPosition++;
+                    }
+
+                    parameters.Add(sb.ToString());
+                    sb.Clear();
+
+                    currentPosition++;
+                }
+
+                startIndex += usedName.Length;
+                int endIndex = currentPosition - 1;
+
+                if (parameters.Count < option.MinParameterCount) throw new CommandParserException("Option " + option.Names[0] + " has insufficient number of parameters.");
+
+                command = command.Remove(startIndex, endIndex - startIndex); //zmazem parametre optiony pre jednoduchsie hladanie argumentov
+
+                if (parameters.Count == 0) continue;
+
+                var castMethod = typeof(ValueCaster).GetMethod("Cast");
+                var castOfTypeMethod = castMethod.MakeGenericMethod(new[] { propType });
+
+                if (isArray)
+                {
+                    Type arrayType = propType.MakeArrayType();
+                    var array = (IList)Activator.CreateInstance(arrayType);
+
+                    foreach (string p in parameters)
+                    {
+                        array.Add(castOfTypeMethod.Invoke(null, new object[] { p }));
+                    }
+
+                    property.SetValue(commandInstance, array);
+                }
+                else if (isList)
+                {
+                    Type genericListType = typeof(List<>).MakeGenericType(propType);
+                    var list = (IList)Activator.CreateInstance(genericListType);
+
+                    foreach (string p in parameters)
+                    {
+                        list.Add(castOfTypeMethod.Invoke(null, new object[] { p }));
+                    }
+
+                    property.SetValue(commandInstance, list);
+                }
+                else if (parameters.Count == 1)
+                {
+                    property.SetValue(commandInstance, castOfTypeMethod.Invoke(null, new object[] { parameters[0] }));
+                }
+
+                //skontrolovat boundaries
+                Boundaries<IComparable> boundaries = (Boundaries<IComparable>)property.GetCustomAttributes(typeof(Boundaries<IComparable>), false).FirstOrDefault(defaultValue: null);
+                if (boundaries == null) continue;
+
+                if (isArray || isList)
+                {
+                    foreach (IComparable v in (IList)property.GetValue(commandInstance))
+                    {
+                        if (v.CompareTo(boundaries.LowerBound) < 0 || v.CompareTo(boundaries.UpperBound) > 0) throw new CommandParserException("Option " + option.Names[0] + " has a parameter outside of its boundaries.");
+                    }
+                }
+                else if (parameters.Count == 1)
+                {
+                    IComparable v = (IComparable)property.GetValue(commandInstance);
+
+                    if (v.CompareTo(boundaries.LowerBound) < 0 || v.CompareTo(boundaries.UpperBound) > 0) throw new CommandParserException("Option " + option.Names[0] + " has a parameter outside of its boundaries.");
+                }
+            }
+
+            //skontrolovat exclusivities a dependencies, inak exception
+            foreach (PropertyInfo property in properties)
+            {
+                Option option = property.GetCustomAttributes<Option>(false).FirstOrDefault(defaultValue: null);
+                if (option == null) continue;
+
+                if (option.Dependencies != null && commandReferenceBag.ArgsPresence[option.Names[0]])
+                {
+                    foreach (string dep in option.Dependencies)
+                    {
+                        if (!commandReferenceBag.ArgsPresence[dep]) throw new CommandParserException("Dependency " + dep + " of option " + option.Names[0] + " is missing.");
+                    }
+                }
+
+                if (option.Exclusivities != null && commandReferenceBag.ArgsPresence[option.Names[0]])
+                {
+                    foreach (string excl in option.Exclusivities)
+                    {
+                        if (commandReferenceBag.ArgsPresence[excl]) throw new CommandParserException("Exclusivity " + excl + " of option " + option.Names[0] + " is present.");
+                    }
+                }
             }
 
             return commandInstance;
         }
 
-        private static T ParseArguments(string [] command, T commandInstance)
+        //ak je za tym este parameter, tak to bud bude argument alebo sa pri parsovani argumentu hodi vynimka
+
+        //delete option arguments, so parsing plain arguments will be easier, just skipping - or --
+
+        private static T ParseArguments(string command, T commandInstance, CommandReferenceBag commandReferenceBag)
         {
             //partial implementation...
             PropertyInfo[] properties = typeof(T).GetProperties();
@@ -338,6 +327,11 @@ namespace CommandLineParser
             }
 
             return commandInstance;
+        }
+
+        private static string LeaveOneSpace(string s)
+        {
+            return string.Join(" ", s.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries).ToList().Select(x => x.Trim()));
         }
     }
 }

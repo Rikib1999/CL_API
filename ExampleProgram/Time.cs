@@ -1,7 +1,7 @@
 ﻿using CommandLineParser;
 
 namespace ExampleProgram
-{
+{//-f format --portability -o=aaa --append --verbose -n 9
     public class Time : ICommandDefinition
     {
         [Option(names: new string[] { "-f", "--format" }
@@ -36,18 +36,18 @@ namespace ExampleProgram
         )]
         public string Verbose { get; set; }
 
-        [Argument(order: 0, IsRequired = true)]
+        [Argument("command", order: 0, IsRequired = true)]
         public string Command { get; set; }
 
-        [Argument(order: 1, IsRequired = true)]
+        [Argument("arguments", order: 1, IsRequired = true)]
         public List<string> Arguments { get; set; }
 
         [Boundaries<int>(lowerBound: 1, upperBound: 10)]
-        [Option(names: new string[] { "-n", "--number" })]
+        [Option(names: new string[] { "-n", "--number" }, MinParameterCount = 1, MaxParameterCount = 1)]
         public int Number { get; set; }
 
         [Option(names: new string[] { "-r", "--random" }
-            , Dependencies = new string[] { "--verbose" }
+            , MinParameterCount = 0, MaxParameterCount = 0, Dependencies = new string[] { "--verbose" }
             , HelpText = "This is a random option"
             , Exclusivities = new string[] { "-n" }
         )]

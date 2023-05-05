@@ -8,7 +8,16 @@
         /// <param name="name">Any of the names of an option or argument.</param>
         public static bool IsPresent(this ICommandDefinition commandDefinition, string name)
         {
-            return true;
+            foreach (var cr in CommandReferencer.commandReferences)
+            {
+                if (cr.Reference.Target == commandDefinition)
+                {
+                    if (!cr.ArgsPresence.ContainsKey(name)) return false;
+                    return cr.ArgsPresence[name];
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -18,7 +27,16 @@
         /// <returns></returns>
         public static string GetHelpText(this ICommandDefinition commandDefinition, string name)
         {
-            return $"help text for command {name}";
+            foreach (var cr in CommandReferencer.commandReferences)
+            {
+                if (cr.Reference.Target == commandDefinition)
+                {
+                    if (!cr.HelpTexts.ContainsKey(name)) return "";
+                    return cr.HelpTexts[name];
+                }
+            }
+
+            return "";
         }
 
         /// <summary>
@@ -27,7 +45,15 @@
         /// <returns></returns>
         public static string GetHelpText(this ICommandDefinition commandDefinition)
         {
-            return "help text";
+            foreach (var cr in CommandReferencer.commandReferences)
+            {
+                if (cr.Reference.Target == commandDefinition)
+                {
+                    return cr.AllHelpText;
+                }
+            }
+
+            return "";
         }
     }
 }

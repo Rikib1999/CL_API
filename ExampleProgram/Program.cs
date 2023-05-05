@@ -14,12 +14,14 @@ namespace ExampleProgram
 
             if (timeCommand.IsPresent("--verbose"))
             {
-                //...
+                var b = 2;
             }
 
             var randomCommandHelpText = timeCommand.GetHelpText("-r");
 
             var wholeHelpText = timeCommand.GetHelpText();
+
+            var x = 5;
         }
     }
 }

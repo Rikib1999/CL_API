@@ -1,7 +1,7 @@
 ﻿namespace CommandLineParser
 {
     /// <summary>
-    /// Property attribute for defining boundary arguments.
+    /// Property attribute for defining boundary arguments. (inclusive)
     /// </summary>
     [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
     public class Boundaries<T> : Attribute where T : IComparable

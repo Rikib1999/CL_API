@@ -54,7 +54,7 @@
         /// <summary>
         /// Delimeter of option arguments, default is single space.
         /// </summary>
-        public string Delimeter { get; set; } = " ";
+        public char Delimeter { get; set; } = ' ';
 
         #endregion
     }

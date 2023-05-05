@@ -7,12 +7,16 @@
     public class Argument : Attribute
     {
         /// <param name="order">Order of the argument in the command.</param>
-        public Argument(int order)
+        public Argument(string name, int order)
         {
+            this.name = name;
             this.order = order;
         }
 
         #region positional arguments
+
+        readonly string name;
+        public string Name { get { return name; } }
 
         readonly int order;
         public int Order { get { return order; } }
