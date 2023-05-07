@@ -52,7 +52,7 @@
         public string[]? Exclusivities { get; set; } = null;
 
         /// <summary>
-        /// Delimeter of option arguments, default is single space.
+        /// Delimeter of option arguments, default is single space. Characters '-' and '.' are not allowed.
         /// </summary>
         public char Delimeter { get; set; } = ' ';
 

@@ -33,6 +33,7 @@ namespace CommandLineParser
                 {
                     foreach (string n in option.Names)
                     {
+                        if (presence.ContainsKey(n)) throw new CommandParserException("Option name [" + n + "] occurs multiple times.");
                         presence.Add(n, false);
                         helpTexts.Add(n, "");
                     }
@@ -43,6 +44,7 @@ namespace CommandLineParser
                 Argument argument = property.GetCustomAttributes<Argument>(false).FirstOrDefault(defaultValue: null);
                 if (argument != null)
                 {
+                    if (presence.ContainsKey(argument.Name)) throw new CommandParserException("Argument name [" + argument.Name + "] occurs multiple times.");
                     presence.Add(argument.Name, false);
                     helpTexts.Add(argument.Name, "");
                 }

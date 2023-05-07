@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33403.182
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParserTests", "ParserTests.csproj", "{81590615-1501-43AE-B38D-55129B9504AC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandLineParser", "..\CommandLineParser\CommandLineParser.csproj", "{4F5163FD-89E8-43F3-8750-5BD6F71160FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81590615-1501-43AE-B38D-55129B9504AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81590615-1501-43AE-B38D-55129B9504AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81590615-1501-43AE-B38D-55129B9504AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81590615-1501-43AE-B38D-55129B9504AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F5163FD-89E8-43F3-8750-5BD6F71160FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F5163FD-89E8-43F3-8750-5BD6F71160FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F5163FD-89E8-43F3-8750-5BD6F71160FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F5163FD-89E8-43F3-8750-5BD6F71160FF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B772D1D2-3642-4683-A529-20FCC40073B1}
+	EndGlobalSection
+EndGlobal
