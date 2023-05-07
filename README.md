@@ -91,8 +91,6 @@ SimpleCommand simpleCommand = new SimpleCommand();
             timeCommand = CommandParser<SimpleCommand>.Parse(commandLineInput, simpleCommand);
 ```
 
-
-
 ### example
 
 ``` C#
