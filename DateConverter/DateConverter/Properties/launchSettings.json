@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DateConverter": {
+      "commandName": "Project",
+      "commandLineArgs": "--date 2018-12-31T14:45 --format \"MM/dd/yyyy-HH:mm\""
+    }
+  }
+}
