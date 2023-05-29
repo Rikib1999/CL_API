@@ -1,0 +1,24 @@
+stages:
+  - build
+  - TimeExtension
+
+variables:
+  project: "CommandLineParser"
+
+build:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  script:
+    - cd CommandLineParser
+    - dotnet restore
+    - dotnet build
+
+TimeExtension:
+  stage: TimeExtension
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  script:
+    - "cd ReviewDatetimeProgram"
+    - "dotnet build"
+    - 'dotnet build --no-restore'
+    - 'dotnet run --project ReviewDatetimeProgram.csproj -- --date=2018-12-31T14:45 --format=%d.%m.'
+
