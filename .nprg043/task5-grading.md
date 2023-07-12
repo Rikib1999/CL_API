@@ -50,11 +50,11 @@ instancni promenne tridy reprezentujici konfiguraci programu. Anotace
 pozicnich parametru, typ promennych urcuje typ hodnot, predavanych v retezcove
 podobe na prikazove radce.
 
-`-` Jazyk atributu ma nizkou granularitu.
+`-` Jazyk atributu ma prilis hrubou granularitu.
 
   * Atributu je pomerne malo a kazdy zhlukuje velky pocet ruznych
     properties, ktere jsou v naproste vetsine nepovinne.
-    
+
     Misto atributu `Option` s nepovinnymi properties by bylo vhodne
     nadefinovat vice jednoduchych atributu, jejichz pouziti je rovnez
     nepovinne, ale umoznuje rozdelit ruzne koncepty, podobne jako to dela
@@ -70,7 +70,7 @@ podobe na prikazove radce.
     radu veci, ktere normalne dela shell).
 
   * API poskytuje vetsi mnozstvi vyjimek.
-    
+
     Stacily by dva hlavni typy vyjimek pro konfiguraci a chyby na vstupu.
     Dulezite je, aby se k uzivateli dostala vhodna chybova hlaska. Vetsina
     vyjimek by tedy mohla byt pro knihovnu interni. To by design vasi knihovny
@@ -123,7 +123,7 @@ slozitych (bezne 5-6 urovni vnoreni) a malo oddeluje vrstvy abstrakce
   * V mnoha metodach je inline iterace pres kolekce, ktera by mela byt
     prevedena na dotaz nad kolekci (extrahovany do jine metody) a pak pouziti
     vysledku v ramci "business logiky".
-    
+
     Napr. `CheckDependencies()` nebo `CheckExclusivities()`.
 
 `-` Pri sestaveni knihovny prekladac generuje mozstvi (21) varovani.
